@@ -18,6 +18,23 @@
 ########################################################################
 # Setup shared library variant
 ########################################################################
+
+if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+    set(QNX_TARGET $ENV{QNX_TARGET})
+    set(LIBUSB_INCLUDE_DIRS "${QNX_TARGET}/usr/include/libusb-1.0")
+    set(CMAKE_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}/rtl-sdr-tests")
+    if(QNX_TARGET MATCHES "qnx7")
+    set(LIBUSB_LIBRARIES   "${QNX_TARGET}/${CPUVARDIR}/usr/lib/libusb-1.0.so")
+    else()
+    #link like this to your SDP 710
+    set(LIBUSB_LIBRARIES   "/home/rtimmaraju/qnx710_3/target/qnx7/${CPUVARDIR}/usr/lib/libusb-1.0.so")
+    #copy 710 libusb package to the  location of SDP 800
+    #set(LIBUSB_LIBRARIES   "${QNX_TARGET}/${CPUVARDIR}/lib/libusb-1.0.so")
+    endif()
+    include_directories(${LIBUSB_INCLUDE_DIRS})
+    link_directories(${LIBUSB_LIBRARIES})
+endif()
+
 add_library(rtlsdr SHARED librtlsdr.c
   tuner_e4k.c tuner_fc0012.c tuner_fc0013.c tuner_fc2580.c tuner_r82xx.c)
 target_link_libraries(rtlsdr ${LIBUSB_LIBRARIES} ${THREADS_PTHREADS_LIBRARY})
@@ -132,7 +149,7 @@ if(UNIX)
 target_link_libraries(rtl_fm m)
 target_link_libraries(rtl_adsb m)
 target_link_libraries(rtl_power m)
-if(APPLE OR CMAKE_SYSTEM MATCHES "OpenBSD")
+if(APPLE OR CMAKE_SYSTEM MATCHES "OpenBSD" OR CMAKE_SYSTEM_NAME STREQUAL "QNX")
     target_link_libraries(rtl_test m)
 else()
     target_link_libraries(rtl_test m rt)
