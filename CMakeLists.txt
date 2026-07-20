@@ -139,11 +139,19 @@ endif (ENABLE_ZEROCOPY)
 ########################################################################
 # Install public header files
 ########################################################################
-install(FILES
-    include/rtl-sdr.h
-    include/rtl-sdr_export.h
-    DESTINATION include
-)
+if(QNX)
+    install(FILES
+        include/rtl-sdr.h
+        include/rtl-sdr_export.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+else()
+    install(FILES
+        include/rtl-sdr.h
+        include/rtl-sdr_export.h
+        DESTINATION include
+    )
+endif()
 
 ########################################################################
 # Add subdirectories
